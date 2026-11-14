@@ -6,6 +6,7 @@ exec $SHELL
 
 # Setup Environment
 mamba env create -f environment.lock.yml
+
 mamba activate spaceapps
 
 # Verify that GDAL can read HDF4
