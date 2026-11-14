@@ -1,0 +1,28 @@
+name: spaceapps
+channels: [conda-forge]
+dependencies:
+  - python=3.12
+  - gdal
+  - libgdal-hdf4     # MODIS driver (separate plugin on conda-forge)
+  - libgdal-hdf5
+  - libgdal-netcdf
+  - rasterio
+  - rioxarray
+  - xarray
+  - geopandas
+  - pyogrio
+  - shapely
+  - pyproj
+  - netcdf4
+  - h5netcdf
+  - pyarrow
+  - numpy
+  - pandas
+  - scipy
+  - scikit-learn
+  - dask
+  - earthaccess
+  - requests
+  - jupyterlab
+  - matplotlib
+  - folium
