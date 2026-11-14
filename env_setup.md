@@ -10,3 +10,7 @@ mamba activate spaceapps
 
 # Verify that GDAL can read HDF4
 python -c "from osgeo import gdal; print(gdal.__version__, gdal.GetDriverByName('HDF4'))"
+
+# Start development
+mamba activate spaceapps
+jupyter lab
