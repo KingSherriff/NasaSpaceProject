@@ -1,4 +1,7 @@
 data/raw/
-data/processed/
+data/processed/*
+!data/processed/moon_cells.parquet
+!data/processed/mars_cells.parquet
+!data/processed/planet_sites.parquet
 test_scripts.ipynb
 public/data/LDEM64_PA_gridline_202405.grd
