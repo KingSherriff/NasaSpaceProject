@@ -1,0 +1,27 @@
+[project]
+name = "nasaspaceproject-backup"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = [
+    "dask>=2026.8.0",
+    "earthaccess>=0.19.0",
+    "folium>=0.20.0",
+    "geopandas>=1.2.0",
+    "h5netcdf>=1.8.3",
+    "jupyterlab>=4.6.6",
+    "matplotlib>=3.11.2",
+    "netcdf4>=1.7.5.1.post1",
+    "numpy>=2.5.4",
+    "pandas>=3.1.1",
+    "pyarrow>=26.0.1",
+    "pyhdf>=0.11.7",
+    "pyogrio>=0.13.0",
+    "pyproj>=3.8.0",
+    "rasterio>=1.5.2",
+    "requests>=2.34.2",
+    "rioxarray>=0.24.0",
+    "scikit-learn>=1.9.1",
+    "scipy>=1.18.1",
+    "shapely>=2.2.0",
+    "xarray>=2026.9.0",
+]
