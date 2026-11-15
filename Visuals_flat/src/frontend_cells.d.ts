@@ -25,7 +25,7 @@ export interface FrontendCells {
   cell_id: number[];    // unique, = row * 720 + col
   lat: number[];        // cell centre (.25 / .75)
   lon: number[];
-  passes_all: (0 | 1)[]; // forest/urban/water discriminator
+  passes_all: (0 | 1)[]; // forest/urban/water screening
   temp: number[];       // deg C
   elevation: number[];  // m
   apps: Record<AppName, AppLayer>;

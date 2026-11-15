@@ -9,7 +9,7 @@ Parameter choices below are informed assumptions, not fully literature-validated
 
 | # | Dataset | Provider | Used for | Columns produced | Access |
 |---|---|---|---|---|---|
-| 1 | **MODIS MCD12C1 v061** (Land Cover Type 1, IGBP, percent per class, year 2022, 0.05°) | NASA LP DAAC | Discriminator filters, barren ground | `water_pct`, `forest_pct`, `urban_pct`, `snow_pct`, `barren_pct` | NASA Earthdata login (`earthaccess`) |
+| 1 | **MODIS MCD12C1 v061** (Land Cover Type 1, IGBP, percent per class, year 2022, 0.05°) | NASA LP DAAC | Screening filters, barren ground | `water_pct`, `forest_pct`, `urban_pct`, `snow_pct`, `barren_pct` | NASA Earthdata login (`earthaccess`) |
 | 2 | **GEDI gridded aboveground biomass density** (agbd mean, 12 km, 2019-04-17 to 2023-03-16) | NASA ORNL DAAC (collection 2339, concept `C3043630107-ORNL_CLOUD`) | Vegetation/biomass feature (not a filter) | `biomass`, `biomass_p` | NASA Earthdata login (`earthaccess`) |
 | 3 | **WorldClim 2.1 bioclim, 10 arc-min** (BIO1, BIO6, BIO7, BIO12) | UC Davis / WorldClim (not NASA) | Climate: base land mask, temperature, dryness | `temp`, `temp_min`, `temp_range`, `precip` (+ `*_p` percentiles) | Direct download, `geodata.ucdavis.edu` |
 | 4 | **Smithsonian GVP, Holocene Volcanoes** (Volcanoes of the World, WFS) | Smithsonian Global Volcanism Program (not NASA) | Cave exploration: distance to basaltic volcanoes | `dist_basalt_volc_km`, `volc_prox` | Public WFS, `webservices.volcano.si.edu/geoserver/GVP-VOTW/wfs` |
@@ -60,9 +60,9 @@ Note on biomass: GEDI only covers 52°N to 52°S. Outside that band the value is
 
 ---
 
-## 3. Discriminator filters
+## 3. Screening filters
 
-The discriminator answers: **"Is this cell obviously unlike a lunar or Martian surface, so that it should never be offered as an analog?"** It is deliberately coarse. It removes the clear mismatches and leaves detailed ranking to scoring.
+The screening step answers: **"Is this cell obviously unlike a lunar or Martian surface, so that it should never be offered as an analog?"** It is deliberately coarse. It removes the clear mismatches and leaves detailed ranking to scoring.
 
 Implemented as a registry (`FILTERS`) in `notebooks/Cells filtering.ipynb`. Each rule is a function returning True when the cell **passes**. Missing values count as 0%, so a cell is not rejected just for lacking data.
 

@@ -33,7 +33,7 @@ Output: labels per cell, e.g. `cave: moon`, plus a quality score for ranking.
      `urban_pct` (13), `snow_pct` (15), `barren_pct` (16).
    - GEDI gridded biomass (ORNL DAAC 2339, agbd mean, 12 km): `biomass`, `biomass_p`. Coverage only
      52°N–52°S; NaN elsewhere, gap-filled to 0 where barren+snow > 80%. **Feature only, not a filter.**
-   - Discriminator filter registry `FILTERS` (forest ≤ 10, urban ≤ 2, water ≤ 25). Adds `pass_<name>`,
+   - Screening filter registry `FILTERS` (forest ≤ 10, urban ≤ 2, water ≤ 25). Adds `pass_<name>`,
      `passes_all`, `excluded_by`. Filters add columns; rows are never deleted.
 2. **Scoring notebook** (`notebooks/Scoring.ipynb`) → `data/processed/cells_scored.parquet`.
 

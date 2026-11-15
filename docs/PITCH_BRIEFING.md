@@ -49,7 +49,7 @@ A world map on a fixed 0.5° grid (about 55 km cells, 95,447 land cells). Each c
 ### Step 1: grid
 Every dataset is averaged onto the same 0.5° grid and joined by a cell ID.
 
-### Step 2: discriminator (screening)
+### Step 2: screening
 Cells are flagged, never deleted, so every rejection can be explained.
 
 | Rule | Passes if | Cells left |

@@ -181,7 +181,7 @@ def build():
         "cell_id": cells.cell_id.astype(int).tolist(),
         "lat": cells.lat.round(2).tolist(),
         "lon": cells.lon.round(2).tolist(),
-        "passes_all": cells.passes_all.astype(int).tolist(),   # forest/urban/water discriminator
+        "passes_all": cells.passes_all.astype(int).tolist(),   # forest/urban/water screening
         "temp": cells.temp.astype(float).round(1).tolist(),
         "elevation": elevation.astype(int).tolist(),
         "apps": apps,
