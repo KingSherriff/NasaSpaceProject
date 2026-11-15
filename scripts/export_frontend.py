@@ -174,7 +174,7 @@ def build():
                 "several targets": "any of the selected",
                 "several applications": "all selected applications must match",
                 "quality / scores": "0 on cells that are not a site for that application"},
-            "ranges": {"temp": [float(cells.temp.min().round(1)), float(cells.temp.max().round(1))],
+            "ranges": {"temp": [round(float(cells.temp.min()), 1), round(float(cells.temp.max()), 1)],
                        "elevation": [float(elevation.min()), float(elevation.max())]},
             "units": {"temp": "deg C, annual mean (WorldClim BIO1)", "elevation": "m"},
         },
@@ -182,7 +182,7 @@ def build():
         "lat": cells.lat.round(2).tolist(),
         "lon": cells.lon.round(2).tolist(),
         "passes_all": cells.passes_all.astype(int).tolist(),   # forest/urban/water discriminator
-        "temp": cells.temp.round(1).tolist(),
+        "temp": cells.temp.astype(float).round(1).tolist(),
         "elevation": elevation.astype(int).tolist(),
         "apps": apps,
     }
