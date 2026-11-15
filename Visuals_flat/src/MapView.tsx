@@ -19,7 +19,6 @@ export default function MapView({ ds, res }: { ds: Dataset; res: Result }) {
   const resRef = useRef(res); resRef.current = res;
   const [ready, setReady] = useState(false);
   const base = useRef<HTMLCanvasElement | null>(null);
-  const busy = useRef(false), dirty = useRef(false), lastUrl = useRef<string | null>(null);
   const { hovered, selected, flyReq, hover, select } = useStore();
 
   useEffect(() => {
@@ -35,7 +34,8 @@ export default function MapView({ ds, res }: { ds: Dataset; res: Result }) {
     mapRef.current = map; map.on('error', (e) => console.error('map error', e.error?.message ?? e));
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right');
     map.on('load', () => {
-      map.addSource('cells', { type: 'image', url: canvas.current.toDataURL(), coordinates: COORDS });
+      // Canvas source: the map reads the offscreen canvas straight into one GPU texture (no PNG encode, no image request).
+      map.addSource('cells', { type: 'canvas', canvas: canvas.current, coordinates: COORDS, animate: false });
       map.addLayer({ id: 'cells', type: 'raster', source: 'cells', paint: { 'raster-resampling': 'nearest', 'raster-fade-duration': 0 } });
       map.addSource('hl', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
       map.addLayer({ id: 'hl-h', type: 'line', source: 'hl', filter: ['==', ['get', 'k'], 'h'], paint: { 'line-color': '#fff', 'line-width': 2 } });
@@ -73,21 +73,11 @@ export default function MapView({ ds, res }: { ds: Dataset; res: Result }) {
       ctx.fillRect(x0, y0, x1 - x0, y1 - y0);
     } };
     draw();
-    // Push the canvas to the map as an image. Encoding is async, so keep only the newest frame in flight.
-    if (busy.current) { dirty.current = true; return; }
-    busy.current = true;
-    const push = () => {
-      dirty.current = false;
-      canvas.current.toBlob((blob) => {
-        if (blob) {
-          const url = URL.createObjectURL(blob), old = lastUrl.current; lastUrl.current = url;
-          (map.getSource('cells') as maplibregl.ImageSource).updateImage({ url, coordinates: COORDS });
-          if (old) setTimeout(() => URL.revokeObjectURL(old), 2000);
-        }
-        if (dirty.current) { draw(); push(); } else busy.current = false;
-      });
-    };
-    push();
+    // Re-upload the canvas to the existing texture on the next frame, then stop (animate is off, so nothing uploads on its own).
+    const src = map.getSource('cells') as maplibregl.CanvasSource;
+    src.play();
+    map.once('render', () => src.pause());
+    map.triggerRepaint();
   }, [res, ready, ds]);
 
   useEffect(() => {
