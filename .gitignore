@@ -1,2 +1,4 @@
 data/raw/
 data/processed/
+test_scripts.ipynb
+public/data/LDEM64_PA_gridline_202405.grd
