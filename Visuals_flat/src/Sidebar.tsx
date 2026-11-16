@@ -31,7 +31,7 @@ export default function Sidebar({ ds, res }: { ds: Dataset; res: Result }) {
         className="fixed left-3 top-3 z-20 hidden rounded-md border border-line bg-panel/90 p-2 backdrop-blur md:block"><PanelLeftOpen size={18} /></button>}
       <aside aria-label="Filters" className={`fixed z-20 flex flex-col border-line bg-panel/92 backdrop-blur transition-transform duration-300 max-md:inset-x-0 max-md:bottom-0 max-md:max-h-[68vh] max-md:rounded-t-xl max-md:border-t md:inset-y-0 md:left-0 md:w-80 md:border-r ${s.sidebar ? 'translate-x-0 translate-y-0' : 'max-md:translate-y-[calc(100%-3.25rem)] md:-translate-x-full'}`}>
         <header className="flex items-center justify-between px-4 py-3">
-          <div><h1 className="text-[15px] font-semibold leading-tight">Terrestrial Analog Finder</h1>
+          <div><h1 className="text-[15px] font-semibold leading-tight">Analog</h1>
             <p className="text-xs text-mute">NASA Space Apps 2026 · Edmonton</p></div>
           <button onClick={() => s.set({ sidebar: !s.sidebar })} aria-label={s.sidebar ? 'Collapse filters' : 'Expand filters'} aria-expanded={s.sidebar}
             className="rounded p-1.5 text-mute hover:text-white"><PanelLeftClose size={18} className="max-md:hidden" /><ChevronDown size={18} className={`md:hidden ${s.sidebar ? '' : 'rotate-180'}`} /></button>

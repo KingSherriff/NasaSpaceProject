@@ -1,6 +1,6 @@
 # Datasets and Pipeline Overview
 
-Terrestrial Analog Finder, NASA Space Apps 2026 (Edmonton). This is a **prototype built in a short hackathon window**.
+Analog, NASA Space Apps 2026 (Edmonton). This is a **prototype built in a short hackathon window**.
 Parameter choices below are informed assumptions, not fully literature-validated values. Where a choice is a judgement call, we say so.
 
 ---

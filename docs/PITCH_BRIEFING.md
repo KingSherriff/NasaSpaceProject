@@ -1,4 +1,4 @@
-# Pitch briefing: Terrestrial Analog Finder
+# Pitch briefing: Analog
 
 Everything the team should know before presenting. NASA Space Apps 2026, Edmonton.
 Numbers are from the data exported on 2026-11-15. If the notebooks are re-run, re-check them.

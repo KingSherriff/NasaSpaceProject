@@ -1,4 +1,4 @@
-# Terrestrial Analog Finder
+# Analog
 
 NASA Space Apps Challenge 2026, Edmonton.
 

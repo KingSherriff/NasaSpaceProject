@@ -1,4 +1,4 @@
-# NASA Space Apps 2026: Terrestrial Analog Finder
+# NASA Space Apps 2026: Analog
 
 Context for AI assistants working in this repo. Hackathon project (Edmonton, Nov 14–15 2026).
 

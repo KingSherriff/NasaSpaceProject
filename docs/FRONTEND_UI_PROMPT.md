@@ -5,7 +5,7 @@ Data file: `public/data/frontend_cells.json` (produced by `scripts/export_fronte
 
 ---
 
-Build a single-page web app: an interactive world map for **NASA Space Apps 2026 (Edmonton)**, challenge: *find and characterise terrestrial analogs for the Moon and Mars from open NASA data*. App name: **Terrestrial Analog Finder**.
+Build a single-page web app: an interactive world map for **NASA Space Apps 2026 (Edmonton)**, challenge: *find and characterise terrestrial analogs for the Moon and Mars from open NASA data*. App name: **Analog**.
 
 ## What the user does
 They look for places on Earth that are good analogs for the Moon and/or Mars, for a chosen activity. They pick filters on the left, and the map shows only the cells that satisfy all of them.
