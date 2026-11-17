@@ -14,9 +14,11 @@ Output: labels per cell, e.g. `cave: moon`, plus a quality score for ranking.
 ## Environment
 - Linux (Ubuntu), mamba env `spaceapps` from `environment.yml` (conda-forge; GDAL with HDF4 plugin
   `libgdal-hdf4` for MODIS files).
-- Repo root: `~/spaceapps`. Use **absolute paths** built from `ROOT = Path.home() / "spaceapps"`
+- Repo root: `~/spaceapps`. Use **absolute paths** built from `ROOT = Path.home() / "spaceapps" / "AnalogEngine"`
   (relative `../data` paths broke once when the notebook's working folder disappeared).
-- Raw data: `data/raw/<source>/`, processed: `data/processed/`. Both git-ignored.
+- Layout: `AnalogEngine/` = data pipeline (`notebooks/` as py:percent, `scripts/`, `data/`, `public/data/` exports);
+  `AnalogApp/` = the frontend (Vite + React + MapLibre, Globe/Flat projection toggle).
+- Raw data: `AnalogEngine/data/raw/<source>/`, processed: `AnalogEngine/data/processed/`. Both git-ignored.
 - NASA Earthdata login via `earthaccess.login(persist=True)` (~/.netrc).
 
 ## Grid and cell IDs
@@ -35,7 +37,7 @@ Output: labels per cell, e.g. `cave: moon`, plus a quality score for ranking.
      52°N–52°S; NaN elsewhere, gap-filled to 0 where barren+snow > 80%. **Feature only, not a filter.**
    - Screening filter registry `FILTERS` (forest ≤ 10, urban ≤ 2, water ≤ 25). Adds `pass_<name>`,
      `passes_all`, `excluded_by`. Filters add columns; rows are never deleted.
-2. **Scoring notebook** (`notebooks/Scoring.ipynb`) → `data/processed/cells_scored.parquet`.
+2. **Scoring notebook** (`AnalogEngine/notebooks/Scoring.py`) → `data/processed/cells_scored.parquet`.
 
 ## Scoring design
 - Two separate questions:

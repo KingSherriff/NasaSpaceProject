@@ -64,7 +64,7 @@ Note on biomass: GEDI only covers 52°N to 52°S. Outside that band the value is
 
 The screening step answers: **"Is this cell obviously unlike a lunar or Martian surface, so that it should never be offered as an analog?"** It is deliberately coarse. It removes the clear mismatches and leaves detailed ranking to scoring.
 
-Implemented as a registry (`FILTERS`) in `notebooks/Cells filtering.ipynb`. Each rule is a function returning True when the cell **passes**. Missing values count as 0%, so a cell is not rejected just for lacking data.
+Implemented as a registry (`FILTERS`) in `AnalogEngine/notebooks/Cells filtering.py`. Each rule is a function returning True when the cell **passes**. Missing values count as 0%, so a cell is not rejected just for lacking data.
 
 | Filter | Passes if | Rejects | Why this threshold (assumption) |
 |---|---|---|---|
@@ -90,7 +90,7 @@ Implemented as a registry (`FILTERS`) in `notebooks/Cells filtering.ipynb`. Each
 
 ## 4. Scoring (applications)
 
-Implemented in `notebooks/Scoring.ipynb`. Output: `data/processed/cells_scored.parquet`. The base table is never modified.
+Implemented in `AnalogEngine/notebooks/Scoring.py`. Output: `data/processed/cells_scored.parquet`. The base table is never modified.
 
 ### 4.1 Three separate questions
 1. **Suitability.** Is the activity physically possible here? A gate plus a hard condition decides if the cell gets a label at all.
