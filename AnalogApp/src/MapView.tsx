@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import maplibregl from 'maplibre-gl';
 import { BODY_COLOR, BODY_NAME, fmtLat, fmtLon, type Compare, type Dataset } from './data';
 import type { Result } from './filter';
-import { useStore } from './store';
+import { MAP_PROJECTION, useStore } from './store';
 
 const W = 4096; // canvas covers the whole web-mercator world; each cell is ~5.7 px
 const COORDS: [[number, number], [number, number], [number, number], [number, number]] = [[-180, 85.0511], [180, 85.0511], [180, -85.0511], [-180, -85.0511]];
@@ -19,14 +19,14 @@ export default function MapView({ ds, res, cmp, hidden = false }: { ds: Dataset;
   const resRef = useRef(res); resRef.current = res;
   const [ready, setReady] = useState(false);
   const busy = useRef(false), dirty = useRef(false), lastUrl = useRef<string | null>(null);
-  const { hovered, selected, flyReq, site, hover, select } = useStore();
+  const { hovered, selected, flyReq, site, projection, hover, select } = useStore();
 
   useEffect(() => {
     canvas.current.width = canvas.current.height = W;
     const map = new maplibregl.Map({
       container: el.current!, center: [-60, 25], zoom: 1.6, minZoom: 0.5, maxZoom: 9, renderWorldCopies: false,
       attributionControl: { compact: true },
-      style: { version: 8, projection: { type: 'globe' },
+      style: { version: 8, projection: { type: MAP_PROJECTION[useStore.getState().projection] },
         sky: { 'atmosphere-blend': ['interpolate', ['linear'], ['zoom'], 0, 1, 5, 1, 7, 0] },
         sources: { base: { type: 'raster', tileSize: 256, maxzoom: 18,
         attribution: 'Imagery © Esri, Maxar, Earthstar Geographics, and the GIS User Community',
@@ -108,6 +108,11 @@ export default function MapView({ ds, res, cmp, hidden = false }: { ds: Dataset;
     if (first >= 0) map.flyTo({ center: [ds.lon[first], ds.lat[first]], zoom: 2.4, speed: 1.2, essential: true });
     return () => pins.forEach((p) => p.remove());
   }, [site, cmp, ready, ds, select]);
+
+  useEffect(() => { // Globe / Flat toggle: switch projection in place, keeping the view, overlay and pins
+    const map = mapRef.current; if (!ready || !map) return;
+    map.setProjection({ type: MAP_PROJECTION[projection] });
+  }, [projection, ready]);
 
   useEffect(() => {
     const map = mapRef.current; if (!flyReq || !map) return;

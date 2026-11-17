@@ -18,12 +18,12 @@ This project divides Earth's land into about 95,000 cells, measures each one wit
 Node 18 or newer is required. The data is already in the repository, so no downloads or accounts are needed.
 
 ```
-cd Visuals_globe
+cd AnalogApp
 npm install
 npm run dev
 ```
 
-`Visuals_flat` is an earlier version with a flat map only. It starts the same way.
+The **Globe / Flat** switch at the top changes between the 3D globe and a flat map, for Earth as well as the Moon and Mars.
 
 ## How it works
 
@@ -124,35 +124,33 @@ mamba activate spaceapps
 jupyter lab
 ```
 
-Run the notebooks in this order:
+The notebooks are `py:percent` scripts (`# %%` cells): run them cell by cell in VS Code, or open them as notebooks in JupyterLab with Jupytext. Run them in this order:
 
-1. `notebooks/Moon Mars topography.ipynb` computes terrain numbers for the Moon and Mars.
-2. `notebooks/Cells filtering.ipynb` builds the Earth table, applies the rules and runs the terrain comparison.
-3. `notebooks/Scoring.ipynb` scores the activities.
+1. `AnalogEngine/notebooks/Moon Mars topography.py` computes terrain numbers for the Moon and Mars.
+2. `AnalogEngine/notebooks/Cells filtering.py` builds the Earth table, applies the rules and runs the terrain comparison.
+3. `AnalogEngine/notebooks/Scoring.py` scores the activities.
 
 Then export for the app:
 
 ```
-python scripts/export_frontend.py
-cd Visuals_globe
-or
-cd Visuals_flat
-npm run export:compare -- ../data/processed public/data/frontend_cells.json public/data/compare.json
+python AnalogEngine/scripts/export_frontend.py
+cd AnalogApp
+npm run export:compare -- ../AnalogEngine/data/processed public/data/frontend_cells.json public/data/compare.json
 ```
 
-The first command writes `public/data/frontend_cells.json` at the repository root and refuses to write a file that breaks the data contract. Copy that file into `Visuals_globe/public/data/` before running the second command.
+The first command writes `AnalogEngine/public/data/frontend_cells.json` and refuses to write a file that breaks the data contract. Copy that file into `AnalogApp/public/data/` before running the second command.
 
 The first run downloads several gigabytes of elevation data. Later runs skip files that are already on disk.
 
 ## Repository layout
 
 ```
-notebooks/        data pipeline (three notebooks, run in the order above)
-scripts/          export and validation scripts
-data/processed/   Moon, Mars and reference site tables
-public/data/      JSON exports from the pipeline
-Visuals_globe/    the app: Earth map plus Moon and Mars globes
-Visuals_flat/     earlier flat-map version of the app
+AnalogEngine/     the data pipeline
+  notebooks/      pipeline notebooks (py:percent, run in the order above)
+  scripts/        export and validation scripts
+  data/processed/ Moon, Mars and reference site tables
+  public/data/    JSON exports from the pipeline
+AnalogApp/        the app: Earth, Moon and Mars, as a 3D globe or a flat map
 docs/             dataset notes and the data contract for the frontend
 ```
 

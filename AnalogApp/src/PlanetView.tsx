@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import maplibregl from 'maplibre-gl';
 import { X } from 'lucide-react';
 import { BODY_COLOR, BODY_NAME, bodyCellAt, bodyLat, bodyLon, bodyVal, fmtLat, fmtLon, fmtVal, type Body, type Compare, type Dataset } from './data';
-import { useStore } from './store';
+import { MAP_PROJECTION, useStore } from './store';
 
 // NASA Solar System Treks imagery. These tiles are equirectangular (2 x 1 tiles at level 0), MapLibre wants web-mercator,
 // so the "trek://" protocol below builds each mercator tile from the Trek tiles that cover it.
@@ -43,7 +43,7 @@ function registerTrek() {
 export default function PlanetView({ body, cmp, ds }: { body: Body; cmp: Compare; ds: Dataset }) {
   const el = useRef<HTMLDivElement>(null), mapRef = useRef<maplibregl.Map | null>(null);
   const [ready, setReady] = useState(false);
-  const { pcell, site, set, focus } = useStore();
+  const { pcell, site, projection, set, focus } = useStore();
   const g = cmp[body];
 
   useEffect(() => {
@@ -52,7 +52,7 @@ export default function PlanetView({ body, cmp, ds }: { body: Body; cmp: Compare
     const map = new maplibregl.Map({
       container: el.current!, center: start == null ? [20, 10] : [bodyLon(g, start), bodyLat(g, start)], zoom: 1.6, minZoom: 0.5, maxZoom: 7.5, renderWorldCopies: false,
       attributionControl: { compact: true },
-      style: { version: 8, projection: { type: 'globe' },
+      style: { version: 8, projection: { type: MAP_PROJECTION[useStore.getState().projection] },
         sources: { base: { type: 'raster', tileSize: 256, maxzoom: TREK_MAX_LEVEL + 1, attribution: TREK[body].credit, tiles: [`trek://${TREK[body].layer}/{z}/{x}/{y}`] } },
         layers: [{ id: 'bg', type: 'background', paint: { 'background-color': '#05070d' } }, { id: 'base', type: 'raster', source: 'base' }] },
     });
@@ -75,6 +75,11 @@ export default function PlanetView({ body, cmp, ds }: { body: Body; cmp: Compare
     });
     return () => { pins.forEach((p) => p?.remove()); mapRef.current = null; setReady(false); map.remove(); };
   }, [body, cmp, g, set]);
+
+  useEffect(() => { // Globe / Flat toggle
+    const map = mapRef.current; if (!ready || !map) return;
+    map.setProjection({ type: MAP_PROJECTION[projection] });
+  }, [projection, ready]);
 
   useEffect(() => { // outline + fly to the selected cell
     const map = mapRef.current; if (!ready || !map) return;
