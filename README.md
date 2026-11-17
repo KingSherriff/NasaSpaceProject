@@ -18,12 +18,12 @@ This project divides Earth's land into about 95,000 cells, measures each one wit
 Node 18 or newer is required. The data is already in the repository, so no downloads or accounts are needed.
 
 ```
-cd Visuals_globe
+cd Visuals
 npm install
 npm run dev
 ```
 
-`Visuals_flat` is an earlier version with a flat map only. It starts the same way.
+The **Globe / Flat** switch at the top changes between the 3D globe and a flat map, for Earth as well as the Moon and Mars.
 
 ## How it works
 
@@ -134,13 +134,11 @@ Then export for the app:
 
 ```
 python scripts/export_frontend.py
-cd Visuals_globe
-or
-cd Visuals_flat
+cd Visuals
 npm run export:compare -- ../data/processed public/data/frontend_cells.json public/data/compare.json
 ```
 
-The first command writes `public/data/frontend_cells.json` at the repository root and refuses to write a file that breaks the data contract. Copy that file into `Visuals_globe/public/data/` before running the second command.
+The first command writes `public/data/frontend_cells.json` at the repository root and refuses to write a file that breaks the data contract. Copy that file into `Visuals/public/data/` before running the second command.
 
 The first run downloads several gigabytes of elevation data. Later runs skip files that are already on disk.
 
@@ -151,8 +149,7 @@ notebooks/        data pipeline (three notebooks, run in the order above)
 scripts/          export and validation scripts
 data/processed/   Moon, Mars and reference site tables
 public/data/      JSON exports from the pipeline
-Visuals_globe/    the app: Earth map plus Moon and Mars globes
-Visuals_flat/     earlier flat-map version of the app
+Visuals/          the app: Earth, Moon and Mars, as a 3D globe or a flat map
 docs/             dataset notes and the data contract for the frontend
 ```
 
