@@ -29,7 +29,7 @@ Equations use GitHub Markdown math (`$…$` inline, `$$…$$` block).
 $$
 \text{row} = \left\lfloor \frac{90 - \varphi}{\Delta} \right\rfloor,\qquad
 \text{col} = \left\lfloor \frac{\lambda + 180}{\Delta} \right\rfloor,\qquad
-\text{cell\\_id} = 720\cdot\text{row} + \text{col}
+\mathrm{cell\_id} = 720\cdot\text{row} + \text{col}
 $$
 
 Cell centres are at $\varphi_r = 90 - \Delta(r + \tfrac12)$ and $\lambda_k = -180 + \Delta(k + \tfrac12)$.
@@ -90,7 +90,7 @@ mapped and explained afterwards.
 average rank divided by the number of valid cells (pandas `rank(pct=True)`, ties share the mean rank):
 
 $$
-x^{p}_c = \frac{\operatorname{rank}(x_c)}{N_{\text{valid}}} \in (0, 1]
+x^{p}_c = \frac{\mathrm{rank}(x_c)}{N_{\text{valid}}} \in (0, 1]
 $$
 
 NaN stays NaN.
@@ -132,18 +132,18 @@ divides 0.5° exactly.
 Fill value 255 is masked. Each column is the cell mean of the class percent, summed over its classes:
 
 $$
-\text{forest\_pct}_c = \sum_{k=1}^{5} \overline{\text{pct}_k}(c),\qquad
-\text{water\_pct}_c = \overline{\text{pct}_0}(c),\quad
-\text{urban\_pct}_c = \overline{\text{pct}_{13}}(c),\quad
-\text{snow\_pct}_c = \overline{\text{pct}_{15}}(c),\quad
-\text{barren\_pct}_c = \overline{\text{pct}_{16}}(c)
+\mathrm{forest\_pct}_c = \sum_{k=1}^{5} \overline{\text{pct}_k}(c),\qquad
+\mathrm{water\_pct}_c = \overline{\text{pct}_0}(c),\quad
+\mathrm{urban\_pct}_c = \overline{\text{pct}_{13}}(c),\quad
+\mathrm{snow\_pct}_c = \overline{\text{pct}_{15}}(c),\quad
+\mathrm{barren\_pct}_c = \overline{\text{pct}_{16}}(c)
 $$
 
 Classes 1–5 are the five IGBP forest types (evergreen/deciduous needleleaf/broadleaf, mixed).
 For scoring we use the fraction:
 
 $$
-\text{barren}_c = \frac{\text{barren\_pct}_c}{100}\quad(\text{NaN} \to 0)
+\text{barren}_c = \frac{\mathrm{barren\_pct}_c}{100}\quad(\text{NaN} \to 0)
 $$
 
 **Why.** NASA product, global, and already a percent per class, so averaging to 0.5° keeps an exact
@@ -160,7 +160,7 @@ outside GEDI coverage (52° N – 52° S):
 $$
 \text{biomass}_c =
 \begin{cases}
-0 & \text{if biomass}_c = \text{NaN and } \text{barren\_pct}_c + \text{snow\_pct}_c > 80 \\
+0 & \text{if biomass}_c = \text{NaN and } \mathrm{barren\_pct}_c + \mathrm{snow\_pct}_c > 80 \\
 \text{biomass}_c & \text{otherwise}
 \end{cases}
 $$
@@ -260,14 +260,14 @@ terrain statistics there are less comparable. The flag marks lower confidence in
 
 | Filter | Rule |
 |---|---|
-| `pass_forest` | $\text{forest\_pct} \le 10$ |
-| `pass_urban` | $\text{urban\_pct} \le 2$ |
-| `pass_water` | $\text{water\_pct} \le 25$ |
-| `pass_slope` | $\text{slope\_p90} \le 15°$ |
-| `pass_rough` | $\text{rough\_p10} \le 15\ \text{m}$ |
+| `pass_forest` | $\mathrm{forest\_pct} \le 10$ |
+| `pass_urban` | $\mathrm{urban\_pct} \le 2$ |
+| `pass_water` | $\mathrm{water\_pct} \le 25$ |
+| `pass_slope` | $\mathrm{slope\_p90} \le 15°$ |
+| `pass_rough` | $\mathrm{rough\_p10} \le 15\ \text{m}$ |
 
 $$
-\text{passes\_all}_c = \bigwedge_{f}\ \text{pass}_f(c)
+\mathrm{passes\_all}_c = \bigwedge_{f}\ \text{pass}_f(c)
 $$
 
 `excluded_by` lists the filters a cell fails.
@@ -302,7 +302,7 @@ $$
 ### 11.2 Proximity ramp
 
 $$
-\text{prox} = \operatorname{clip}\!\left(1 - \frac{d - d_{\text{full}}}{d_{\text{zero}} - d_{\text{full}}},\ 0,\ 1\right),
+\text{prox} = \mathrm{clip}\!\left(1 - \frac{d - d_{\text{full}}}{d_{\text{zero}} - d_{\text{full}}},\ 0,\ 1\right),
 \qquad d_{\text{full}} = 25\ \text{km},\ d_{\text{zero}} = 100\ \text{km}
 $$
 
@@ -338,7 +338,7 @@ $$
 ### 12.1 Feature vector
 
 $$
-\mathbf{f} = \big(\log(1+\text{slope\_p50}),\ \log(1+\text{slope\_p90}),\ \log(1+\text{rough\_p50}),\ \log(1+\text{relief\_p90}),\ \text{hyps}\big)
+\mathbf{f} = \big(\log(1+\mathrm{slope\_p50}),\ \log(1+\mathrm{slope\_p90}),\ \log(1+\mathrm{rough\_p50}),\ \log(1+\mathrm{relief\_p90}),\ \text{hyps}\big)
 $$
 
 Earth candidates are the land cells that pass the forest, urban and water filters (terrain filters are
@@ -356,7 +356,7 @@ $$
 
 $$
 z_j = \sqrt{w_j}\,\frac{f_j - \mu_j}{\sigma_j},\qquad
-w = (1, 1, 1, 1, 2)\ \text{for}\ (\text{slope\_p50}, \text{slope\_p90}, \text{rough\_p50}, \text{relief\_p90}, \text{hyps})
+w = (1, 1, 1, 1, 2)\ \text{for}\ (\mathrm{slope\_p50}, \mathrm{slope\_p90}, \mathrm{rough\_p50}, \mathrm{relief\_p90}, \text{hyps})
 $$
 
 So Euclidean distance in $z$ is the weighted distance $\sqrt{\sum_j w_j \Delta_j^2}$ in standardised units.
@@ -368,7 +368,7 @@ s(d) = e^{-d}
 $$
 
 - **Likeness of an Earth cell** to body $b$: mean distance to its $K = 25$ nearest cells on $b$,
-  $\text{b\_like} = e^{-\bar d_K}$, and its rank `b_like_p` (Section 4).
+  $\mathrm{b\_like} = e^{-\bar d_K}$, and its rank `b_like_p` (Section 4).
 - **Best Earth match for a Moon/Mars cell**: nearest Earth cell, `earth_match_sim` $= e^{-d_1}$.
 - **Reference sites** (Apollo, Jezero, Gale, …): the 10 nearest Earth cells in $z$, greedily thinned so no
   two picks are closer than 300 km on the ground.
