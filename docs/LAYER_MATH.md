@@ -29,7 +29,7 @@ Equations use GitHub Markdown math (`$…$` inline, `$$…$$` block).
 $$
 \text{row} = \left\lfloor \frac{90 - \varphi}{\Delta} \right\rfloor,\qquad
 \text{col} = \left\lfloor \frac{\lambda + 180}{\Delta} \right\rfloor,\qquad
-\text{cell\_id} = 720\cdot\text{row} + \text{col}
+\text{cell\\_id} = 720\cdot\text{row} + \text{col}
 $$
 
 Cell centres are at $\varphi_r = 90 - \Delta(r + \tfrac12)$ and $\lambda_k = -180 + \Delta(k + \tfrac12)$.
