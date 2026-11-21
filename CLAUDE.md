@@ -16,8 +16,8 @@ Output: labels per cell, e.g. `cave: moon`, plus a quality score for ranking.
   `libgdal-hdf4` for MODIS files).
 - Use **absolute paths** from `analog_engine/config.py` (`ROOT`, `RAW`, `PROCESSED`, `FRONT`, built from the
   package location; relative `../data` paths broke once when the notebook's working folder disappeared).
-- Layout: `AnalogEngine/` = data pipeline (`analog_engine/` package, `notebooks/Explore.ipynb` paired with
-  `scripts/Explore.py`, `data/`, `public/data/` exports);
+- Layout: `AnalogEngine/` = data pipeline (`analog_engine/` package, `notebooks/Explore.ipynb` (plain ipynb,
+  no jupytext pairing), `data/`, `public/data/` exports);
   `AnalogApp/` = the frontend (Vite + React + MapLibre, Globe/Flat projection toggle).
 - Run: `cd AnalogEngine && python -m analog_engine [download planets base score frontend | validate]`.
   All pipeline code lives in the package; notebooks only call it.

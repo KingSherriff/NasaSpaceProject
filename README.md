@@ -152,7 +152,7 @@ The first run downloads several gigabytes of elevation data. Later runs skip fil
 ```
 AnalogEngine/     the data pipeline
   analog_engine/  the pipeline package (python -m analog_engine)
-  notebooks/      Explore.ipynb: run steps, look at results (paired with scripts/Explore.py)
+  notebooks/      Explore.ipynb: run steps, look at results
   data/processed/ Moon, Mars and reference site tables
   public/data/    JSON exports from the pipeline
 AnalogApp/        the app: Earth, Moon and Mars, as a 3D globe or a flat map
