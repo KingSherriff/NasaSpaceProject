@@ -14,10 +14,13 @@ Output: labels per cell, e.g. `cave: moon`, plus a quality score for ranking.
 ## Environment
 - Linux (Ubuntu), mamba env `spaceapps` from `environment.yml` (conda-forge; GDAL with HDF4 plugin
   `libgdal-hdf4` for MODIS files).
-- Repo root: `~/spaceapps`. Use **absolute paths** built from `ROOT = Path.home() / "spaceapps" / "AnalogEngine"`
-  (relative `../data` paths broke once when the notebook's working folder disappeared).
-- Layout: `AnalogEngine/` = data pipeline (`notebooks/` as py:percent, `scripts/`, `data/`, `public/data/` exports);
+- Use **absolute paths** from `analog_engine/config.py` (`ROOT`, `RAW`, `PROCESSED`, `FRONT`, built from the
+  package location; relative `../data` paths broke once when the notebook's working folder disappeared).
+- Layout: `AnalogEngine/` = data pipeline (`analog_engine/` package, `notebooks/Explore.ipynb` paired with
+  `scripts/Explore.py`, `data/`, `public/data/` exports);
   `AnalogApp/` = the frontend (Vite + React + MapLibre, Globe/Flat projection toggle).
+- Run: `cd AnalogEngine && python -m analog_engine [download planets base score frontend | validate]`.
+  All pipeline code lives in the package; notebooks only call it.
 - Raw data: `AnalogEngine/data/raw/<source>/`, processed: `AnalogEngine/data/processed/`. Both git-ignored.
 - NASA Earthdata login via `earthaccess.login(persist=True)` (~/.netrc).
 
@@ -28,16 +31,20 @@ Output: labels per cell, e.g. `cave: moon`, plus a quality score for ranking.
   `Resampling.average` otherwise) and joined on `cell_id`.
 
 ## Pipeline
-1. **Base notebook** → `data/processed/cells.parquet` (one row per land cell; never filtered in place).
+Steps in `analog_engine/pipeline.py`: `download` → `planets` (Moon/Mars DEM terrain, `planets.py`) →
+`base` → `score` → `frontend` (`frontend.py`, contract-checked `frontend_cells.json`).
+1. **`base`** (`base_table.py` layers via `engine.py`, then `filters.py`, `likeness.py`) → `data/processed/cells.parquet` (one row per land cell; never filtered in place).
    - WorldClim 2.1 10′ bioclim: `temp` (BIO1 annual mean °C), `temp_min` (BIO6), `temp_range` (BIO7),
      `precip` (BIO12); each also as Earth percentile `*_p` (rank pct, 0–1).
    - MODIS MCD12C1 v061 (2022) IGBP percent cover: `water_pct` (class 0), `forest_pct` (1–5),
      `urban_pct` (13), `snow_pct` (15), `barren_pct` (16).
    - GEDI gridded biomass (ORNL DAAC 2339, agbd mean, 12 km): `biomass`, `biomass_p`. Coverage only
      52°N–52°S; NaN elsewhere, gap-filled to 0 where barren+snow > 80%. **Feature only, not a filter.**
-   - Screening filter registry `FILTERS` (forest ≤ 10, urban ≤ 2, water ≤ 25). Adds `pass_<name>`,
+   - ETOPO 2022 15″ terrain (`terrain.py`): slope, TRI, elevation stats, `elevation`, `elev_p`; `barren` = barren_pct/100.
+   - Screening filter registry `filters.FILTERS` (forest ≤ 10, urban ≤ 2, water ≤ 25, slope_p90 ≤ 15°, rough_p10 ≤ 15 m). Adds `pass_<name>`,
      `passes_all`, `excluded_by`. Filters add columns; rows are never deleted.
-2. **Scoring notebook** (`AnalogEngine/notebooks/Scoring.py`) → `data/processed/cells_scored.parquet`.
+   - Moon/Mars terrain likeness: `moon_like`, `mars_like` (+ `_p`), `*_match_id`.
+2. **`score`** (`analog_engine/scoring/`, one file per application) → `data/processed/cells_scored.parquet`.
 
 ## Scoring design
 - Two separate questions:

@@ -9,3 +9,5 @@ node_modules/
 .dodsrc
 .ipynb_checkpoints/
 dist/
+pyrightconfig.json
+__pycache__/

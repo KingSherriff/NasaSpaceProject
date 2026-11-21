@@ -64,7 +64,7 @@ Note on biomass: GEDI only covers 52°N to 52°S. Outside that band the value is
 
 The screening step answers: **"Is this cell obviously unlike a lunar or Martian surface, so that it should never be offered as an analog?"** It is deliberately coarse. It removes the clear mismatches and leaves detailed ranking to scoring.
 
-Implemented as a registry (`FILTERS`) in `AnalogEngine/notebooks/Cells filtering.py`. Each rule is a function returning True when the cell **passes**. Missing values count as 0%, so a cell is not rejected just for lacking data.
+Implemented as a registry (`FILTERS`) in `AnalogEngine/analog_engine/filters.py`. Each rule is a function returning True when the cell **passes**. Missing values count as 0%, so a cell is not rejected just for lacking data.
 
 | Filter | Passes if | Rejects | Why this threshold (assumption) |
 |---|---|---|---|
@@ -79,7 +79,7 @@ Implemented as a registry (`FILTERS`) in `AnalogEngine/notebooks/Cells filtering
 
 **Output per cell**: `pass_forest`, `pass_urban`, `pass_water`, `passes_all`, and `excluded_by` (a comma-separated list of the filters that rejected it, for tooltips and pitch funnel).
 
-**Funnel and sanity check.** The notebook prints how many cells remain after each filter, and checks that known analogs survive: Atacama, Antarctic Dry Valleys, Haughton Crater, Mauna Kea, Black Point Lava Flow, Rio Tinto, Teide. If a known analog gets rejected, we treat that as a bug in the thresholds.
+**Funnel and sanity check.** The `base` step prints how many cells remain after each filter, and checks that known analogs survive: Atacama, Antarctic Dry Valleys, Haughton Crater, Mauna Kea, Black Point Lava Flow, Rio Tinto, Teide. If a known analog gets rejected, we treat that as a bug in the thresholds.
 
 **Caveats**
 - 0.5° cells are about 55 km wide. Percent cover is an average over that area, so a good small site can be hidden by its surroundings (e.g. a lava field next to a forest).
@@ -90,7 +90,7 @@ Implemented as a registry (`FILTERS`) in `AnalogEngine/notebooks/Cells filtering
 
 ## 4. Scoring (applications)
 
-Implemented in `AnalogEngine/notebooks/Scoring.py`. Output: `data/processed/cells_scored.parquet`. The base table is never modified.
+Implemented in `AnalogEngine/analog_engine/scoring/`. Output: `data/processed/cells_scored.parquet`. The base table is never modified.
 
 ### 4.1 Three separate questions
 1. **Suitability.** Is the activity physically possible here? A gate plus a hard condition decides if the cell gets a label at all.
@@ -120,7 +120,7 @@ Each profile has a target value per feature (on an Earth percentile or 0–1 sca
 
 Reasoning (assumptions): proximity to basalt matters most, so it has the highest weight. Both bodies are very dry, so we want low precipitation. Both have bare surfaces, with a low weight because barren percent from MODIS is only a rough proxy at this scale. Mars is much colder than the Moon's equatorial regions on average, so a cold climate (low temperature percentile) is added for Mars.
 
-**Validation sites**: Craters of the Moon (Idaho), Lava Beds (California), Mauna Loa / HI-SEAS (Hawaii), Cueva de los Verdes (Lanzarote), Undara (Australia), Raufarhólshellir (Iceland). The notebook prints each site's scores and, if rejected, which filter did it.
+**Validation sites**: Craters of the Moon (Idaho), Lava Beds (California), Mauna Loa / HI-SEAS (Hawaii), Cueva de los Verdes (Lanzarote), Undara (Australia), Raufarhólshellir (Iceland). The `score` step (`validation.py`) prints each site's scores and, if rejected, which filter did it.
 
 ### 4.4 Planned
 | Application | Gate | Key data |

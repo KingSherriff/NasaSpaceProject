@@ -121,24 +121,29 @@ Only needed if you want to change the rules or add a layer. The setup assumes Li
 ```
 mamba env create -f environment.lock.yml
 mamba activate spaceapps
-jupyter lab
+cd AnalogEngine
+python -m analog_engine                      # all steps: download planets base score frontend
+python -m analog_engine score frontend       # or only some steps (always run in pipeline order)
+python -m analog_engine validate             # check frontend_cells.json against the contract
 ```
 
-The notebooks are `py:percent` scripts (`# %%` cells): run them cell by cell in VS Code, or open them as notebooks in JupyterLab with Jupytext. Run them in this order:
+The steps:
 
-1. `AnalogEngine/notebooks/Moon Mars topography.py` computes terrain numbers for the Moon and Mars.
-2. `AnalogEngine/notebooks/Cells filtering.py` builds the Earth table, applies the rules and runs the terrain comparison.
-3. `AnalogEngine/notebooks/Scoring.py` scores the activities.
+1. `download` fetches every raw dataset into `AnalogEngine/data/raw/` (NASA Earthdata login for MODIS and GEDI).
+2. `planets` computes terrain numbers for the Moon and Mars.
+3. `base` builds the Earth table, applies the rules and runs the terrain comparison (`cells.parquet`).
+4. `score` scores the activities (`cells_scored.parquet`).
+5. `frontend` writes `AnalogEngine/public/data/frontend_cells.json` and refuses to write a file that breaks the data contract.
 
-Then export for the app:
+All the code is in the `AnalogEngine/analog_engine/` package (one file per step, one file per application in `scoring/`).
+`AnalogEngine/notebooks/Explore.ipynb` runs steps and shows the validation tables and maps.
+
+Then copy `frontend_cells.json` into `AnalogApp/public/data/` and build the comparison layer:
 
 ```
-python AnalogEngine/scripts/export_frontend.py
 cd AnalogApp
 npm run export:compare -- ../AnalogEngine/data/processed public/data/frontend_cells.json public/data/compare.json
 ```
-
-The first command writes `AnalogEngine/public/data/frontend_cells.json` and refuses to write a file that breaks the data contract. Copy that file into `AnalogApp/public/data/` before running the second command.
 
 The first run downloads several gigabytes of elevation data. Later runs skip files that are already on disk.
 
@@ -146,8 +151,8 @@ The first run downloads several gigabytes of elevation data. Later runs skip fil
 
 ```
 AnalogEngine/     the data pipeline
-  notebooks/      pipeline notebooks (py:percent, run in the order above)
-  scripts/        export and validation scripts
+  analog_engine/  the pipeline package (python -m analog_engine)
+  notebooks/      Explore.ipynb: run steps, look at results (paired with scripts/Explore.py)
   data/processed/ Moon, Mars and reference site tables
   public/data/    JSON exports from the pipeline
 AnalogApp/        the app: Earth, Moon and Mars, as a 3D globe or a flat map

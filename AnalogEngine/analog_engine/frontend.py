@@ -1,18 +1,14 @@
-"""Final frontend export: data/processed/cells_scored.parquet -> public/data/frontend_cells.json
+"""Frontend export: cells_scored table -> public/data/frontend_cells.json (contract checked first).
 
-Run:  mamba run -n spaceapps python scripts/export_frontend.py
+REAL vs MOCK is decided automatically per application, by which columns exist in the table:
+    elevation, label_<app>, <app>_quality, score_<app>_moon, score_<app>_mars
+Missing ones are replaced by a smooth random mock so the frontend still works.
 
-REAL vs MOCK is decided automatically per layer, by which columns exist in cells_scored.parquet.
-When a teammate's notebook adds the columns below, the mock is replaced with NO code change:
-
-    elevation                                              (m, mean per 0.5 deg cell)
-    label_<app>      "moon" | "mars" | "both" | ""         app in spacewalk, rover, craters, cave
-    <app>_quality    0..1 (0 where label is "")
-    score_<app>_moon, score_<app>_mars   0..1
-
-The file is checked against the contract (validate()) BEFORE it is written; any inconsistency
-stops the export. Contract: public/data/frontend_cells.d.ts, standalone check: scripts/validate_frontend.py
+validate() raises AssertionError on any inconsistency; it runs BEFORE the file is written.
+Contract: public/data/frontend_cells.d.ts. Standalone check: python -m analog_engine validate
 """
+from __future__ import annotations
+
 import json
 from datetime import date
 from pathlib import Path
@@ -21,12 +17,13 @@ import numpy as np
 import pandas as pd
 from scipy.ndimage import zoom
 
-ROOT = Path(__file__).resolve().parents[1]          # absolute, independent of working folder
-SRC = ROOT / "data" / "processed" / "cells_scored.parquet"
-OUT = ROOT / "public" / "data" / "frontend_cells.json"
+from .config import CELL_SIZE as RES
+from .config import FRONT, PROCESSED
+from .scoring.core import MARGIN                    # |moon - mars| < MARGIN -> "both"
 
-RES, NCOLS, NROWS = 0.5, 720, 360
-MARGIN = 0.03                                       # |moon - mars| < MARGIN -> "both" (as Scoring.ipynb)
+SRC = PROCESSED / "cells_scored.parquet"
+OUT = FRONT / "frontend_cells.json"
+NCOLS, NROWS = round(360 / RES), round(180 / RES)
 MOON, MARS = 1, 2                                   # label bitmask: 0 none, 1 moon, 2 mars, 3 both
 APPS = ["spacewalk", "rover", "craters", "cave"]    # order = frontend chip order
 LABEL_CODE = {"moon": MOON, "mars": MARS, "both": MOON | MARS}
@@ -91,7 +88,7 @@ def has_real(cells, app):
 
 # ----------------------------------------------------------------------------- contract check
 def validate(out):
-    """Raise AssertionError on ANY inconsistency. Same rules as scripts/validate_frontend.py."""
+    """Raise AssertionError on ANY inconsistency. Same rules as validate_file()."""
     n = out["meta"]["n_cells"]
     cols = {k: out[k] for k in ("cell_id", "lat", "lon", "passes_all", "temp", "elevation")}
     for name, arr in cols.items():
@@ -123,7 +120,7 @@ def validate(out):
         assert (q[~site] == 0).all() and (sm[~site] == 0).all() and (sr[~site] == 0).all(), \
             f"{app}: non-zero quality/score on a cell that is not a site"
         assert (q[site] > 0).all(), f"{app}: site with quality 0"
-        # label must agree with the two scores (same rule as Scoring.ipynb), up to rounding
+        # label must agree with the two scores (same rule as scoring.core), up to rounding
         tie = np.abs(sm - sr) < MARGIN - 0.011
         far = np.abs(sm - sr) > MARGIN + 0.011
         assert (label[site & tie] == 3).all(), f"{app}: label 'both' expected inside the tie margin"
@@ -134,8 +131,9 @@ def validate(out):
 
 
 # ----------------------------------------------------------------------------- build
-def build():
-    cells = pd.read_parquet(SRC)
+def build(cells: pd.DataFrame | None = None) -> dict:
+    """Frontend dict from the scored cells table (default: read cells_scored.parquet)."""
+    cells = pd.read_parquet(SRC) if cells is None else cells
     cells = cells.dropna(subset=["temp"]).sort_values("cell_id").reset_index(drop=True)
     mocked = []
 
@@ -189,13 +187,26 @@ def build():
     return out
 
 
-if __name__ == "__main__":
-    data = build()
-    validate(data)                                              # stops here if anything is inconsistent
-    OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(json.dumps(data, separators=(",", ":"), allow_nan=False))
-    print(f"OK  wrote {OUT} ({OUT.stat().st_size / 1e6:.1f} MB), {data['meta']['n_cells']:,} cells")
+def write(data: dict, out: Path = OUT) -> Path:
+    """Validate, then write (stops before writing if anything is inconsistent)."""
+    validate(data)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(data, separators=(",", ":"), allow_nan=False))
+    print(f"OK  wrote {out} ({out.stat().st_size / 1e6:.1f} MB), {data['meta']['n_cells']:,} cells")
     print(f"    mocked layers: {data['meta']['mocked'] or 'none'}")
     for app, a in data["apps"].items():
         lab = pd.Series(a["label"]).map({0: "none", 1: "moon", 2: "mars", 3: "both"}).value_counts().to_dict()
         print(f"    {app:<10}{lab}")
+    return out
+
+
+def validate_file(path: Path = OUT) -> bool:
+    """Check an exported file against the contract; prints OK / FAIL."""
+    data = json.loads(Path(path).read_text())
+    try:
+        validate(data)
+    except AssertionError as e:
+        print(f"FAIL {Path(path).name}: {e}")
+        return False
+    print(f"OK   {Path(path).name}: {data['meta']['n_cells']:,} cells, mocked = {data['meta']['mocked'] or 'none'}")
+    return True
